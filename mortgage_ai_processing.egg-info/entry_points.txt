@@ -1,0 +1,2 @@
+[console_scripts]
+mortgage-ai-processing = mortgage_ai_processing.cli:cli

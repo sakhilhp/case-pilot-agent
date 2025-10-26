@@ -1,0 +1,56 @@
+{
+    "application_id": "E2E-TEST-001",
+    "borrower_info": {
+        "first_name": "John",
+        "last_name": "Doe",
+        "ssn": "123-45-6789",
+        "date_of_birth": "1985-01-01T00:00:00",
+        "email": "john.doe@example.com",
+        "phone": "555-123-4567",
+        "phone_number": "555-123-4567",
+        "current_address": "123 Main St, Anytown, ST 12345",
+        "employment_status": "Employed",
+        "annual_income": 150000
+    },
+    "property_info": {
+        "address": "456 Oak Avenue, Testville, ST 67890",
+        "property_type": "Single Family Home",
+        "property_value": 1000000
+    },
+    "loan_details": {
+        "loan_amount": 800000,
+        "loan_type": "conventional",
+        "loan_term_years": 30,
+        "down_payment": 60000,
+        "purpose": "Purchase"
+    },
+    "documents": [
+        {
+            "document_id": "e2e-pdf-001",
+            "document_type": "income",
+            "file_path": "test_documents/sample.pdf",
+            "original_filename": "sample.pdf",
+            "file_size_bytes": 1024,
+            "mime_type": "application/pdf",
+            "classification_confidence": 0.95,
+            "processing_metadata": {
+                "processing_agent": "document_agent",
+                "processing_tool": "ocr_extractor"
+            }
+        },
+        {
+            "document_id": "e2e-passport-001",
+            "document_type": "passport",
+            "file_path": "test_documents/sample.pdf",
+            "original_filename": "sample_passport.txt",
+            "file_size_bytes": 512,
+            "mime_type": "text/plain",
+            "classification_confidence": 0.98,
+            "processing_metadata": {
+                "processing_agent": "document_agent",
+                "processing_tool": "ocr_extractor"
+            }
+        }
+    ],
+    "processing_status": "pending"
+}

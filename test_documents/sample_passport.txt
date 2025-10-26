@@ -1,0 +1,10 @@
+PASSPORT
+United States of America
+
+Name: JOHN DOE
+Date of Birth: 01 JAN 1985
+Place of Birth: NEW YORK, NY
+Passport No: 123456789
+Date of Issue: 01 JAN 2020
+Date of Expiration: 01 JAN 2030
+Authority: U.S. DEPARTMENT OF STATE

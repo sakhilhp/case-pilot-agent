@@ -1,0 +1,30 @@
+{
+  "agent_id": "credit_agent",
+  "agent_name": "Credit Assessment Agent",
+  "application_id": "E2E-TEST-001",
+  "execution_time_seconds": 0.320504,
+  "result": {
+    "agent_name": "Credit Assessment Agent",
+    "assessment_type": "credit_assessment",
+    "tool_results": {
+      "credit_score_analyzer": "ToolResult(tool_name='credit_score_analyzer', success=True, data={'credit_score': 720, 'score_model': 'FICO 8', 'risk_level': 'medium', 'confidence_score': 0.9, 'recommendations': ['Good credit score for conventional loans']}, error_message=None, execution_time=0.101393, timestamp=datetime.datetime(2025, 10, 26, 22, 7, 51, 540926), metadata={})",
+      "credit_history_analyzer": "ToolResult(tool_name='credit_history_analyzer', success=True, data={'payment_history_score': 0.85, 'credit_utilization_ratio': 0.25, 'late_payments_12_months': 0, 'confidence_score': 0.88}, error_message=None, execution_time=0.100431, timestamp=datetime.datetime(2025, 10, 26, 22, 7, 51, 641357), metadata={})",
+      "debt_to_income_calculator": "ToolResult(tool_name='debt_to_income_calculator', success=True, data={'total_dti_ratio': 0.3837123360977644, 'housing_dti_ratio': 0.3837123360977644, 'monthly_payment': 4796.404201222055, 'monthly_income': 12500.0, 'confidence_score': 0.92}, error_message=None, execution_time=0.1, timestamp=datetime.datetime(2025, 10, 26, 22, 7, 51, 757864), metadata={})"
+    },
+    "risk_score": 18.2,
+    "risk_level": "RiskLevel.LOW",
+    "confidence_level": 0.9,
+    "recommendations": [
+      "Elevated DTI - verify all debt obligations are included"
+    ],
+    "conditions": [],
+    "red_flags": [],
+    "processing_time_seconds": 0.31984,
+    "errors": [],
+    "warnings": [
+      "No credit documents found for assessment"
+    ],
+    "created_at": "2025-10-26 22:07:51.760037"
+  },
+  "timestamp": "2025-10-26T22:07:51.762813"
+}

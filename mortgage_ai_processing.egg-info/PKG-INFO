@@ -1,0 +1,220 @@
+Metadata-Version: 2.2
+Name: mortgage-ai-processing
+Version: 0.1.0
+Summary: A Python-based agentic AI solution for automated mortgage processing
+Home-page: https://github.com/mortgage-ai-processing/mortgage-ai-processing
+Author: Mortgage AI Processing Team
+Author-email: team@mortgage-ai-processing.com
+Classifier: Development Status :: 3 - Alpha
+Classifier: Intended Audience :: Financial and Insurance Industry
+Classifier: License :: OSI Approved :: MIT License
+Classifier: Operating System :: OS Independent
+Classifier: Programming Language :: Python :: 3
+Classifier: Programming Language :: Python :: 3.9
+Classifier: Programming Language :: Python :: 3.10
+Classifier: Programming Language :: Python :: 3.11
+Classifier: Programming Language :: Python :: 3.12
+Classifier: Topic :: Office/Business :: Financial
+Classifier: Topic :: Scientific/Engineering :: Artificial Intelligence
+Requires-Python: >=3.9
+Description-Content-Type: text/markdown
+Requires-Dist: pydantic>=2.0.0
+Requires-Dist: dataclasses-json>=0.6.0
+Requires-Dist: typing-extensions>=4.0.0
+Requires-Dist: azure-ai-documentintelligence>=1.0.0
+Requires-Dist: azure-identity>=1.15.0
+Requires-Dist: azure-core>=1.29.0
+Requires-Dist: cryptography>=41.0.0
+Requires-Dist: httpx>=0.25.0
+Requires-Dist: requests>=2.31.0
+Requires-Dist: click>=8.1.0
+Requires-Dist: sqlalchemy>=2.0.0
+Requires-Dist: psycopg2-binary>=2.9.0
+Requires-Dist: structlog>=23.0.0
+Requires-Dist: pytest>=7.4.0
+Requires-Dist: pytest-asyncio>=0.21.0
+Requires-Dist: pytest-cov>=4.1.0
+Requires-Dist: black>=23.0.0
+Requires-Dist: isort>=5.12.0
+Requires-Dist: mypy>=1.5.0
+Provides-Extra: dev
+Requires-Dist: pytest>=7.4.0; extra == "dev"
+Requires-Dist: pytest-asyncio>=0.21.0; extra == "dev"
+Requires-Dist: pytest-cov>=4.1.0; extra == "dev"
+Requires-Dist: black>=23.0.0; extra == "dev"
+Requires-Dist: isort>=5.12.0; extra == "dev"
+Requires-Dist: mypy>=1.5.0; extra == "dev"
+Dynamic: author
+Dynamic: author-email
+Dynamic: classifier
+Dynamic: description
+Dynamic: description-content-type
+Dynamic: home-page
+Dynamic: provides-extra
+Dynamic: requires-dist
+Dynamic: requires-python
+Dynamic: summary
+
+# Mortgage AI Processing System
+
+A Python-based agentic AI solution that automates the end-to-end mortgage processing workflow. The system employs a multi-agent architecture where each agent specializes in a specific domain of mortgage processing, equipped with dedicated tools to perform their tasks.
+
+## Features
+
+- **Multi-Agent Architecture**: Six specialized agents for different mortgage processing domains
+- **MCP Protocol Support**: Built with Model Context Protocol for flexible integration
+- **Document Processing**: Automated document extraction, classification, and validation
+- **Income Verification**: Multi-source employment and income verification
+- **Credit Assessment**: Comprehensive credit analysis and risk scoring
+- **Property Assessment**: Automated property valuation and risk evaluation
+- **Risk Assessment**: KYC compliance and sanctions screening
+- **Underwriting**: Automated loan decision making and letter generation
+
+## Architecture
+
+The system consists of the following main components:
+
+### Agents
+- **Document Processing Agent**: Handles document OCR, classification, and validation
+- **Income Verification Agent**: Verifies employment and calculates qualified income
+- **Credit Assessment Agent**: Analyzes credit scores and payment history
+- **Property Assessment Agent**: Performs property valuation and LTV calculations
+- **Risk Assessment Agent**: Conducts KYC and sanctions screening
+- **Underwriting Agent**: Makes final loan decisions and generates letters
+
+### Tools
+Each agent is equipped with specialized tools for their domain:
+- Document tools: OCR extraction, classification, validation
+- Income tools: Employment verification, income calculation, consistency checking
+- Credit tools: Score analysis, history evaluation, DTI calculation
+- Property tools: Valuation, LTV calculation, risk analysis
+- Risk tools: KYC scoring, PEP/sanctions screening
+- Underwriting tools: Decision engine, letter generation
+
+## Installation
+
+```bash
+# Clone the repository
+git clone https://github.com/mortgage-ai-processing/mortgage-ai-processing.git
+cd mortgage-ai-processing
+
+# Install dependencies
+pip install -r requirements.txt
+
+# Install the package
+pip install -e .
+```
+
+## Configuration
+
+The system uses a configuration file for external service credentials and settings:
+
+```json
+{
+  "environment": "development",
+  "debug": false,
+  "azure": {
+    "endpoint": "https://your-document-intelligence.cognitiveservices.azure.com/",
+    "api_key": "your-api-key"
+  },
+  "credit_service": {
+    "provider": "experian",
+    "endpoint": "https://api.experian.com",
+    "api_key": "your-api-key"
+  }
+}
+```
+
+You can also use environment variables:
+- `AZURE_DOCUMENT_INTELLIGENCE_ENDPOINT`
+- `AZURE_DOCUMENT_INTELLIGENCE_KEY`
+- `DATABASE_HOST`
+- `DATABASE_PASSWORD`
+- etc.
+
+## Usage
+
+### Basic Usage
+
+```python
+from mortgage_ai_processing import MortgageProcessor
+from mortgage_ai_processing.models import MortgageApplication
+
+# Initialize the processor
+processor = MortgageProcessor()
+
+# Process a mortgage application
+application = MortgageApplication(...)
+results = await processor.process_application(application)
+```
+
+### MCP Server
+
+```python
+from mortgage_ai_processing.mcp import MCPServer
+
+# Start MCP server
+server = MCPServer("mortgage-ai-processing")
+await server.start_server(host="localhost", port=8000)
+```
+
+### Individual Tools
+
+```python
+from mortgage_ai_processing.tools import DocumentOCRExtractor
+
+# Use individual tools
+ocr_tool = DocumentOCRExtractor()
+result = await ocr_tool.execute(document_path="path/to/document.pdf")
+```
+
+## Development
+
+### Project Structure
+
+```
+mortgage_ai_processing/
+├── agents/              # Agent implementations
+├── tools/               # Tool implementations
+├── models/              # Data models and schemas
+├── mcp/                 # MCP server implementation
+├── config/              # Configuration management
+└── __init__.py
+```
+
+### Running Tests
+
+```bash
+pytest tests/
+```
+
+### Code Formatting
+
+```bash
+black mortgage_ai_processing/
+isort mortgage_ai_processing/
+```
+
+## Requirements
+
+- Python 3.9+
+- Azure Document Intelligence service
+- External credit service API (Experian, Equifax, etc.)
+- Property valuation service API
+- PEP/Sanctions screening service API
+
+## License
+
+MIT License - see LICENSE file for details.
+
+## Contributing
+
+1. Fork the repository
+2. Create a feature branch
+3. Make your changes
+4. Add tests
+5. Submit a pull request
+
+## Support
+
+For support and questions, please open an issue on GitHub.

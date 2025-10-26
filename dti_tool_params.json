@@ -1,0 +1,20 @@
+{
+  "application_id": "E2E-TEST-001",
+  "borrower_info": {
+    "name": "John Doe",
+    "ssn": "123-45-6789"
+  },
+  "income_information": {
+    "monthly_income": 12500.0,
+    "annual_income": 150000.0,
+    "income_sources": [
+      "stated_income"
+    ]
+  },
+  "debt_information": {},
+  "loan_details": {
+    "loan_amount": 800000.0,
+    "loan_term_years": 30,
+    "estimated_payment": 4000.0
+  }
+}
