@@ -29,9 +29,13 @@ class PEPSanctionsCheckerTool(BaseTool):
     """
     
     def __init__(self):
+
+    
+        from ..base import ToolCategory
         super().__init__(
             name="pep_sanctions_checker",
             description="PEP detection and sanctions screening with AI-enhanced risk analysis",
+            category=ToolCategory.FINANCIAL_ANALYSIS,
             agent_domain="risk_assessment"
         )
         
@@ -128,6 +132,45 @@ class PEPSanctionsCheckerTool(BaseTool):
             },
             "required": ["application_id", "borrower_info"]
         }
+    
+    def get_input_schema(self) -> Dict[str, Any]:
+
+    
+        """Return input schema for the tool."""
+
+    
+        return {
+
+    
+            "type": "object",
+
+    
+            "required": ["applicant_id"],
+
+    
+            "properties": {
+
+    
+                "applicant_id": {
+
+    
+                    "type": "string",
+
+    
+                    "description": "Unique identifier for the applicant"
+
+    
+                }
+
+    
+            }
+
+    
+        }
+
+    
+    
+
     
     async def execute(self, **kwargs) -> ToolResult:
         """

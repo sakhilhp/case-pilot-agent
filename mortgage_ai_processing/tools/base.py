@@ -34,7 +34,6 @@ class ToolMetadata:
     output_schema: Optional[Dict[str, Any]] = None
     agent_domain: Optional[str] = None
     confidence_scoring: bool = True
-    mock_data_available: bool = True
 
 
 @dataclass
@@ -65,7 +64,6 @@ class BaseTool(ABC):
     Enhanced to match FSI Tools framework pattern with:
     - Comprehensive error handling and logging
     - Confidence scoring and risk assessment
-    - Mock data support for development
     - Regulatory compliance tracking
     """
     

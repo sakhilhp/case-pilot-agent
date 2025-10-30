@@ -97,15 +97,19 @@ class EmploymentVerificationTool(BaseTool):
     """Tool for verifying employment status and income consistency."""
     
     def __init__(self):
-        metadata = ToolMetadata(
+        from ..base import ToolCategory
+        super().__init__(
             name="employment_verification_tool",
             description="Verifies employment status and income consistency using extracted document data. Validates employment information across multiple document sources including employment letters, pay stubs, and tax documents.",
+            category=ToolCategory.FINANCIAL_ANALYSIS,
             version="1.0.0",
-            author="Mortgage AI Processing System",
-            tags=["employment", "verification", "income", "document", "validation"]
+            agent_domain="income_verification"
         )
-        super().__init__(metadata)
         
+    def get_input_schema(self) -> Dict[str, Any]:
+        """Get the JSON schema for tool input parameters."""
+        return self.get_parameters_schema()
+    
     def get_parameters_schema(self) -> Dict[str, Any]:
         """Get the JSON schema for tool parameters."""
         return {

@@ -196,15 +196,19 @@ class PropertyValueEstimatorTool(BaseTool):
     """Tool for comprehensive property valuation using multiple approaches."""
     
     def __init__(self):
-        metadata = ToolMetadata(
+        from ..base import ToolCategory
+        super().__init__(
             name="property_value_estimator",
             description="Estimate property value using automated valuation models (AVM), comparable sales analysis, and multiple valuation approaches for mortgage lending decisions",
+            category=ToolCategory.FINANCIAL_ANALYSIS,
             version="1.0.0",
-            author="Mortgage AI Processing System",
-            tags=["property", "valuation", "avm", "appraisal", "mortgage", "real_estate"]
+            agent_domain="property_assessment"
         )
-        super().__init__(metadata)
         
+    def get_input_schema(self) -> Dict[str, Any]:
+        """Get the JSON schema for tool input parameters."""
+        return self.get_parameters_schema()
+    
     def get_parameters_schema(self) -> Dict[str, Any]:
         """Get the JSON schema for tool parameters."""
         return {
@@ -320,7 +324,7 @@ class PropertyValueEstimatorTool(BaseTool):
             "additionalProperties": False
         }
         
-    async def _execute(self, **kwargs) -> ToolResult:
+    async def execute(self, **kwargs) -> ToolResult:
         """Execute property valuation."""
         try:
             property_details_dict = kwargs.get("property_details", {})

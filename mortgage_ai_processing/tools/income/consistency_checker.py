@@ -27,9 +27,13 @@ class IncomeConsistencyCheckerTool(BaseTool):
     """
     
     def __init__(self):
+
+    
+        from ..base import ToolCategory
         super().__init__(
             name="income_consistency_checker",
             description="Cross-document income validation and discrepancy detection for mortgage lending",
+            category=ToolCategory.FINANCIAL_ANALYSIS,
             agent_domain="income_verification"
         )
         
@@ -80,6 +84,45 @@ class IncomeConsistencyCheckerTool(BaseTool):
             },
             "required": ["application_id", "borrower_info", "income_documents"]
         }
+    
+    def get_input_schema(self) -> Dict[str, Any]:
+
+    
+        """Return input schema for the tool."""
+
+    
+        return {
+
+    
+            "type": "object",
+
+    
+            "required": ["applicant_id"],
+
+    
+            "properties": {
+
+    
+                "applicant_id": {
+
+    
+                    "type": "string",
+
+    
+                    "description": "Unique identifier for the applicant"
+
+    
+                }
+
+    
+            }
+
+    
+        }
+
+    
+    
+
     
     async def execute(self, **kwargs) -> ToolResult:
         """

@@ -131,14 +131,14 @@ class LoanTermsCalculatorTool(BaseTool):
     """Tool for calculating optimal loan terms and structure."""
     
     def __init__(self):
-        metadata = ToolMetadata(
+        from ..base import ToolCategory
+        super().__init__(
             name="loan_terms_calculator",
             description="Calculate optimal loan terms, rates, and structure with automatic loan product matching based on borrower profile and market conditions",
+            category=ToolCategory.UNDERWRITING,
             version="1.0.0",
-            author="Mortgage AI Processing System",
-            tags=["loan", "terms", "calculator", "rates", "pricing", "underwriting"]
+            agent_domain="underwriting"
         )
-        super().__init__(metadata)
         
     def get_parameters_schema(self) -> Dict[str, Any]:
         """Get the JSON schema for tool parameters."""

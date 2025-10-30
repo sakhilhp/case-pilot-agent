@@ -465,10 +465,26 @@ python -m mortgage_ai_processing.cli tools list
 # Document OCR Extractor (existing command)
 python -m mortgage_ai_processing.cli tools ocr test_documents/sample.pdf --output ocr_results.json
 
-# Document Classifier
+# Document Classifier (Azure Document Intelligence)
 python -m mortgage_ai_processing.cli tools call document_classifier --show-schema
+
+# INTELLIGENT MODE: Process entire mortgage application (processes all documents automatically)
 python -m mortgage_ai_processing.cli tools call document_classifier \
-  --params '{"document_id": "test-001", "extracted_text": "Bank of America Statement...", "file_path": "test.pdf"}'
+  --params-file e2e_application.json \
+  --params '{"mortgage_application": $(cat e2e_application.json), "process_all_documents": true}' \
+  --output batch_classification_results.json
+
+# SINGLE DOCUMENT MODE: Test with individual document file
+python -m mortgage_ai_processing.cli tools call document_classifier \
+  --params '{"document_id": "test-001", "document_path": "test_documents/sample.pdf", "use_prebuilt_models": true}'
+
+# Test with document URL
+python -m mortgage_ai_processing.cli tools call document_classifier \
+  --params '{"document_id": "test-002", "document_url": "https://example.com/document.pdf"}'
+
+# Test with extracted text (fallback mode)
+python -m mortgage_ai_processing.cli tools call document_classifier \
+  --params '{"document_id": "test-003", "extracted_text": "Bank of America Statement Account Number: 1234567890..."}'
 
 # Identity Validator
 python -m mortgage_ai_processing.cli tools call identity_validator --show-schema

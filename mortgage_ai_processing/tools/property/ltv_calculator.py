@@ -27,9 +27,13 @@ class LTVCalculatorTool(BaseTool):
     """
     
     def __init__(self):
+
+    
+        from ..base import ToolCategory
         super().__init__(
             name="ltv_calculator",
             description="Loan-to-value ratio calculation and compliance checking",
+            category=ToolCategory.FINANCIAL_ANALYSIS,
             agent_domain="property_assessment"
         )
         
@@ -159,6 +163,45 @@ class LTVCalculatorTool(BaseTool):
             },
             "required": ["application_id", "loan_information", "property_information"]
         }
+    
+    def get_input_schema(self) -> Dict[str, Any]:
+
+    
+        """Return input schema for the tool."""
+
+    
+        return {
+
+    
+            "type": "object",
+
+    
+            "required": ["applicant_id"],
+
+    
+            "properties": {
+
+    
+                "applicant_id": {
+
+    
+                    "type": "string",
+
+    
+                    "description": "Unique identifier for the applicant"
+
+    
+                }
+
+    
+            }
+
+    
+        }
+
+    
+    
+
     
     async def execute(self, **kwargs) -> ToolResult:
         """

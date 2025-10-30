@@ -31,9 +31,13 @@ class PropertyRiskAnalyzerTool(BaseTool):
     """
     
     def __init__(self):
+
+    
+        from ..base import ToolCategory
         super().__init__(
             name="property_risk_analyzer",
             description="Comprehensive property risk evaluation and factor identification",
+            category=ToolCategory.FINANCIAL_ANALYSIS,
             agent_domain="property_assessment"
         )
         
@@ -158,6 +162,45 @@ class PropertyRiskAnalyzerTool(BaseTool):
             },
             "required": ["application_id", "property_information", "loan_information"]
         }
+    
+    def get_input_schema(self) -> Dict[str, Any]:
+
+    
+        """Return input schema for the tool."""
+
+    
+        return {
+
+    
+            "type": "object",
+
+    
+            "required": ["applicant_id"],
+
+    
+            "properties": {
+
+    
+                "applicant_id": {
+
+    
+                    "type": "string",
+
+    
+                    "description": "Unique identifier for the applicant"
+
+    
+                }
+
+    
+            }
+
+    
+        }
+
+    
+    
+
     
     async def execute(self, **kwargs) -> ToolResult:
         """

@@ -28,9 +28,11 @@ class AddressProofValidator(BaseTool):
     """
     
     def __init__(self):
+        from ..base import ToolCategory
         super().__init__(
             name="address_proof_validator",
             description="Validate address proof documents for KYC compliance",
+            category=ToolCategory.DOCUMENT_PROCESSING,
             agent_domain="document_processing"
         )
         self.logger = logging.getLogger("tool.address_proof_validator")
@@ -44,6 +46,10 @@ class AddressProofValidator(BaseTool):
         
         # Address validation patterns
         self.address_patterns = self._initialize_address_patterns()
+    
+    def get_input_schema(self) -> Dict[str, Any]:
+        """Return input schema for the tool (required by BaseTool abstract class)."""
+        return self.get_parameters_schema()
     
     def get_parameters_schema(self) -> Dict[str, Any]:
         """Return JSON schema for tool parameters."""

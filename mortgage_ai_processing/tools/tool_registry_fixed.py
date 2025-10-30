@@ -54,118 +54,222 @@ class FixedToolsRegistry:
     def _register_credit_tools(self) -> None:
         """Register credit assessment tools with agent-expected names."""
         try:
-            # Use simple working tools that implement the interface correctly
+            # Use real implementations instead of mock tools
+            from .credit.credit_score_analyzer import EnhancedCreditScoreAnalyzerTool
+            from .credit.history_analyzer import CreditHistoryAnalyzerTool
+            from .credit.dti_calculator import DebtToIncomeCalculatorTool
+            
+            self._tools["credit_score_analyzer"] = EnhancedCreditScoreAnalyzerTool()
+            self._tools["credit_history_analyzer"] = CreditHistoryAnalyzerTool()
+            self._tools["debt_to_income_calculator"] = DebtToIncomeCalculatorTool()
+            
+            self.logger.info("Registered real credit assessment tools")
+            
+        except Exception as e:
+            self.logger.error(f"Error registering credit tools: {e}")
+            # Emergency fallback only if real implementations fail
+            self.logger.warning("Falling back to simple credit tools")
             from .simple_working_tools import (
                 CreditScoreAnalyzerTool,
                 CreditHistoryAnalyzerTool,
                 DebtToIncomeCalculatorTool
             )
-            
             self._tools["credit_score_analyzer"] = CreditScoreAnalyzerTool()
             self._tools["credit_history_analyzer"] = CreditHistoryAnalyzerTool()
             self._tools["debt_to_income_calculator"] = DebtToIncomeCalculatorTool()
-            
-            self.logger.info("Registered credit assessment tools")
-            
-        except Exception as e:
-            self.logger.error(f"Error registering credit tools: {e}")
     
     def _register_income_tools(self) -> None:
         """Register income verification tools with agent-expected names."""
         try:
-            # Use simple working tools that implement the interface correctly
+            # Use real implementations instead of mock tools
+            from .income.employment_verification import EmploymentVerificationTool
+            from .income.income_calculator import EnhancedIncomeCalculatorTool
+            from .income.consistency_checker import IncomeConsistencyCheckerTool
+            
+            self._tools["employment_verification_tool"] = EmploymentVerificationTool()
+            self._tools["simple_income_calculator"] = EnhancedIncomeCalculatorTool()
+            self._tools["income_consistency_checker"] = IncomeConsistencyCheckerTool()
+            
+            self.logger.info("Registered real income verification tools")
+            
+        except Exception as e:
+            self.logger.error(f"Error registering income tools: {e}")
+            # Emergency fallback only if real implementations fail
+            self.logger.warning("Falling back to simple income tools")
             from .simple_working_tools import (
                 EmploymentVerificationTool,
                 SimpleIncomeCalculatorTool,
                 IncomeConsistencyCheckerTool
             )
-            
             self._tools["employment_verification_tool"] = EmploymentVerificationTool()
             self._tools["simple_income_calculator"] = SimpleIncomeCalculatorTool()
             self._tools["income_consistency_checker"] = IncomeConsistencyCheckerTool()
-            
-            self.logger.info("Registered income verification tools")
-            
-        except Exception as e:
-            self.logger.error(f"Error registering income tools: {e}")
     
     def _register_property_tools(self) -> None:
         """Register property assessment tools with agent-expected names."""
         try:
-            # Use simple working tools that implement the interface correctly
+            # Use real implementations instead of mock tools
+            from .property.property_value_estimator import PropertyValueEstimatorTool
+            from .property.ltv_calculator import LTVCalculatorTool
+            from .property.risk_analyzer import PropertyRiskAnalyzerTool
+            
+            self._tools["property_valuation_tool"] = PropertyValueEstimatorTool()
+            self._tools["ltv_calculator"] = LTVCalculatorTool()
+            self._tools["property_risk_analyzer"] = PropertyRiskAnalyzerTool()
+            
+            self.logger.info("Registered real property assessment tools")
+            
+        except Exception as e:
+            self.logger.error(f"Error registering property tools: {e}")
+            # Emergency fallback only if real implementations fail
+            self.logger.warning("Falling back to simple property tools")
             from .simple_working_tools import (
                 PropertyValuationTool,
                 LTVCalculatorTool,
                 PropertyRiskAnalyzerTool
             )
-            
             self._tools["property_valuation_tool"] = PropertyValuationTool()
             self._tools["ltv_calculator"] = LTVCalculatorTool()
             self._tools["property_risk_analyzer"] = PropertyRiskAnalyzerTool()
-            
-            self.logger.info("Registered property assessment tools")
-            
-        except Exception as e:
-            self.logger.error(f"Error registering property tools: {e}")
     
     def _register_risk_tools(self) -> None:
         """Register risk assessment tools with agent-expected names."""
         try:
-            # Use simple working tools that implement the interface correctly
-            from .simple_working_tools import (
-                KYCRiskScorerTool,
-                PEPSanctionsCheckerTool
-            )
+            # Use real implementations instead of mock tools
+            from .risk.kyc_risk_scorer import KYCRiskScorerTool
+            from .risk.pep_sanctions_checker import PEPSanctionsCheckerTool
             
             self._tools["kyc_risk_scorer"] = KYCRiskScorerTool()
             self._tools["pep_sanctions_checker"] = PEPSanctionsCheckerTool()
             
-            self.logger.info("Registered risk assessment tools")
+            self.logger.info("Registered real risk assessment tools")
             
         except Exception as e:
             self.logger.error(f"Error registering risk tools: {e}")
+            # Emergency fallback only if real implementations fail
+            self.logger.warning("Falling back to simple risk tools")
+            from .simple_working_tools import (
+                KYCRiskScorerTool,
+                PEPSanctionsCheckerTool
+            )
+            self._tools["kyc_risk_scorer"] = KYCRiskScorerTool()
+            self._tools["pep_sanctions_checker"] = PEPSanctionsCheckerTool()
     
     def _register_underwriting_tools(self) -> None:
         """Register underwriting tools with agent-expected names."""
         try:
-            # Use simple working tools that implement the interface correctly
+            # Use real implementations instead of mock tools
+            from .underwriting.loan_decision_engine import EnhancedLoanDecisionEngine
+            from .underwriting.loan_letter_generator import LoanLetterGeneratorTool
+            
+            self._tools["loan_decision_engine"] = EnhancedLoanDecisionEngine()
+            self._tools["loan_letter_generator"] = LoanLetterGeneratorTool()
+            
+            self.logger.info("Registered real underwriting tools")
+            
+        except Exception as e:
+            self.logger.error(f"Error registering underwriting tools: {e}")
+            # Emergency fallback only if real implementations fail
+            self.logger.warning("Falling back to simple underwriting tools")
             from .simple_working_tools import (
                 LoanDecisionEngineTool,
                 LoanLetterGeneratorTool
             )
-            
             self._tools["loan_decision_engine"] = LoanDecisionEngineTool()
             self._tools["loan_letter_generator"] = LoanLetterGeneratorTool()
-            
-            self.logger.info("Registered underwriting tools")
-            
-        except Exception as e:
-            self.logger.error(f"Error registering underwriting tools: {e}")
     
     def _register_document_tools(self) -> None:
         """Register document processing tools with agent-expected names."""
         try:
-            # Use the actual OCR extractor we fixed
-            from .document.ocr_extractor import DocumentOCRExtractor
+            self.logger.info("🔄 Starting document tools registration...")
             
-            # Use simple working tools for the others
+            # Import OCR extractor first
+            from .document.ocr_extractor import DocumentOCRExtractor
+            self.logger.info("✅ Successfully imported DocumentOCRExtractor")
+            
+            # Try to import and instantiate DocumentClassifier with detailed error handling
+            DocumentClassifier = None
+            try:
+                self.logger.info("🔄 Attempting to import DocumentClassifier...")
+                from .document.classifier import DocumentClassifier as RealDocumentClassifier
+                self.logger.info("✅ Successfully imported DocumentClassifier class")
+                
+                self.logger.info("🔄 Attempting to instantiate DocumentClassifier...")
+                test_classifier = RealDocumentClassifier()
+                self.logger.info("✅ Successfully instantiated DocumentClassifier")
+                DocumentClassifier = RealDocumentClassifier
+                
+            except Exception as e:
+                self.logger.error(f"❌ Failed to import/instantiate DocumentClassifier: {e}")
+                import traceback
+                self.logger.error(f"Full traceback: {traceback.format_exc()}")
+                
+                # Fallback to simple version
+                self.logger.info("⚠️ Falling back to simple DocumentClassifierTool")
+                from .simple_working_tools import DocumentClassifierTool as DocumentClassifier
+            
+            # Try AddressProofValidator
+            AddressProofValidator = None
+            try:
+                from .document.address_proof_validator import AddressProofValidator as RealAddressValidator
+                self.logger.info("✅ Successfully imported AddressProofValidator")
+                AddressProofValidator = RealAddressValidator
+            except Exception as e:
+                self.logger.error(f"❌ Failed to import AddressProofValidator: {e}")
+                from .simple_working_tools import AddressProofValidatorTool as AddressProofValidator
+                self.logger.info("⚠️ Using fallback AddressProofValidatorTool")
+            
+            # Import simple tools
             from .simple_working_tools import (
-                DocumentClassifierTool,
                 IdentityDocumentValidatorTool,
-                DocumentExtractorTool,
-                AddressProofValidatorTool
+                DocumentExtractorTool
             )
             
-            self._tools["document_ocr_extractor"] = DocumentOCRExtractor()
-            self._tools["document_classifier"] = DocumentClassifierTool()
-            self._tools["identity_document_validator"] = IdentityDocumentValidatorTool()
-            self._tools["document_extractor"] = DocumentExtractorTool()
-            self._tools["address_proof_validator"] = AddressProofValidatorTool()
+            # Register all tools
+            self.logger.info("🔄 Registering tools in registry...")
             
-            self.logger.info("Registered document processing tools")
+            self._tools["document_ocr_extractor"] = DocumentOCRExtractor()
+            self.logger.info("✅ Registered document_ocr_extractor")
+            
+            self._tools["document_classifier"] = DocumentClassifier()
+            self.logger.info("✅ Registered document_classifier")
+            
+            self._tools["identity_document_validator"] = IdentityDocumentValidatorTool()
+            self.logger.info("✅ Registered identity_document_validator")
+            
+            self._tools["document_extractor"] = DocumentExtractorTool()
+            self.logger.info("✅ Registered document_extractor")
+            
+            self._tools["address_proof_validator"] = AddressProofValidator()
+            self.logger.info("✅ Registered address_proof_validator")
+            
+            self.logger.info(f"✅ Successfully registered {len(self._tools)} document processing tools")
             
         except Exception as e:
-            self.logger.error(f"Error registering document tools: {e}")
+            self.logger.error(f"❌ Critical error registering document tools: {e}")
+            import traceback
+            self.logger.error(f"Full traceback: {traceback.format_exc()}")
+            
+            # Emergency fallback - register at least the working tools
+            try:
+                from .document.ocr_extractor import DocumentOCRExtractor
+                from .simple_working_tools import (
+                    DocumentClassifierTool,
+                    IdentityDocumentValidatorTool,
+                    DocumentExtractorTool,
+                    AddressProofValidatorTool
+                )
+                
+                self._tools["document_ocr_extractor"] = DocumentOCRExtractor()
+                self._tools["document_classifier"] = DocumentClassifierTool()
+                self._tools["identity_document_validator"] = IdentityDocumentValidatorTool()
+                self._tools["document_extractor"] = DocumentExtractorTool()
+                self._tools["address_proof_validator"] = AddressProofValidatorTool()
+                
+                self.logger.info("⚠️ Emergency fallback: registered simple document tools")
+                
+            except Exception as fallback_error:
+                self.logger.error(f"❌ Even fallback registration failed: {fallback_error}")
     
     def get_tool(self, tool_name: str) -> Optional[BaseTool]:
         """Get a tool by name."""

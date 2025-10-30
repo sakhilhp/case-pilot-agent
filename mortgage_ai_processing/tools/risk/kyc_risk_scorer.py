@@ -30,9 +30,13 @@ class KYCRiskScorerTool(BaseTool):
     """
     
     def __init__(self):
+
+    
+        from ..base import ToolCategory
         super().__init__(
             name="kyc_risk_scorer",
             description="Comprehensive KYC analysis with identity verification, document validation, and fraud detection",
+            category=ToolCategory.FINANCIAL_ANALYSIS,
             agent_domain="risk_assessment"
         )
         
@@ -168,6 +172,45 @@ class KYCRiskScorerTool(BaseTool):
             },
             "required": ["application_id", "borrower_info"]
         }
+    
+    def get_input_schema(self) -> Dict[str, Any]:
+
+    
+        """Return input schema for the tool."""
+
+    
+        return {
+
+    
+            "type": "object",
+
+    
+            "required": ["applicant_id"],
+
+    
+            "properties": {
+
+    
+                "applicant_id": {
+
+    
+                    "type": "string",
+
+    
+                    "description": "Unique identifier for the applicant"
+
+    
+                }
+
+    
+            }
+
+    
+        }
+
+    
+    
+
     
     async def execute(self, **kwargs) -> ToolResult:
         """

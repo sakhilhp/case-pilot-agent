@@ -26,9 +26,13 @@ class LoanLetterGeneratorTool(BaseTool):
     """
     
     def __init__(self):
+
+    
+        from ..base import ToolCategory
         super().__init__(
             name="loan_letter_generator",
             description="Automated loan letter and documentation generator for all decision types",
+            category=ToolCategory.FINANCIAL_ANALYSIS,
             agent_domain="underwriting"
         )
         self.logger = logging.getLogger("tool.loan_letter_generator")
@@ -40,6 +44,45 @@ class LoanLetterGeneratorTool(BaseTool):
             'denial': self._get_denial_template(),
             'adverse_action': self._get_adverse_action_template()
         }
+    
+    def get_input_schema(self) -> Dict[str, Any]:
+
+    
+        """Return input schema for the tool."""
+
+    
+        return {
+
+    
+            "type": "object",
+
+    
+            "required": ["applicant_id"],
+
+    
+            "properties": {
+
+    
+                "applicant_id": {
+
+    
+                    "type": "string",
+
+    
+                    "description": "Unique identifier for the applicant"
+
+    
+                }
+
+    
+            }
+
+    
+        }
+
+    
+    
+
     
     async def execute(self, **kwargs) -> ToolResult:
         """

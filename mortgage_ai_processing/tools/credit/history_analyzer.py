@@ -28,9 +28,11 @@ class CreditHistoryAnalyzerTool(BaseTool):
     """
     
     def __init__(self):
+        from ..base import ToolCategory
         super().__init__(
             name="credit_history_analyzer",
             description="Comprehensive credit history analysis with payment patterns, utilization, and behavioral insights",
+            category=ToolCategory.FINANCIAL_ANALYSIS,
             agent_domain="credit_assessment"
         )
         
@@ -107,6 +109,28 @@ class CreditHistoryAnalyzerTool(BaseTool):
                 }
             },
             "required": ["application_id", "borrower_info"]
+        }
+    
+    def get_input_schema(self) -> Dict[str, Any]:
+        """Return input schema for credit history analysis."""
+        return {
+            "type": "object",
+            "required": ["applicant_id", "credit_report"],
+            "properties": {
+                "applicant_id": {
+                    "type": "string",
+                    "description": "Unique identifier for the applicant"
+                },
+                "credit_report": {
+                    "type": "object",
+                    "description": "Credit report data with accounts and payment history",
+                    "properties": {
+                        "accounts": {"type": "array"},
+                        "inquiries": {"type": "array"},
+                        "public_records": {"type": "array"}
+                    }
+                }
+            }
         }
     
     async def execute(self, **kwargs) -> ToolResult:

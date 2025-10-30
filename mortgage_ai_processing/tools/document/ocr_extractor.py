@@ -103,11 +103,11 @@ class DocumentOCRExtractor(BaseTool):
             
             # Check if Azure credentials are configured
             if not self.endpoint or not self.api_key:
-                mock_result = await self._mock_ocr_extraction(document_path, document_id)
                 return ToolResult(
                     tool_name=self.name,
-                    success=True,
-                    data=mock_result
+                    success=False,
+                    data={},
+                    error_message="Azure Document Intelligence credentials not configured. Please set AZURE_DOCUMENT_INTELLIGENCE_ENDPOINT and AZURE_DOCUMENT_INTELLIGENCE_API_KEY environment variables."
                 )
             
             # Perform actual Azure Document Intelligence extraction
@@ -205,9 +205,13 @@ class DocumentOCRExtractor(BaseTool):
             return self._convert_azure_result_to_dict(result)
             
         except ImportError as e:
-            self.logger.warning(f"Azure Document Intelligence SDK not available: {str(e)}, using mock extraction")
-            mock_result = await self._mock_ocr_extraction(document_path, "temp_id")
-            return mock_result
+            self.logger.error(f"Azure Document Intelligence SDK not available: {str(e)}")
+            return ToolResult(
+                tool_name=self.name,
+                success=False,
+                data={},
+                error_message=f"Azure Document Intelligence SDK not installed. Please install with: pip install azure-ai-documentintelligence"
+            )
         
         except FileNotFoundError:
             self.logger.error(f"Document file not found: {document_path}")
@@ -219,11 +223,15 @@ class DocumentOCRExtractor(BaseTool):
         
         except Exception as e:
             self.logger.error(f"Azure extraction failed: {str(e)}")
-            # For certain Azure service errors, we might want to fall back to mock
+            # For certain Azure service errors, return proper error
             if "authentication" in str(e).lower() or "unauthorized" in str(e).lower():
-                self.logger.warning("Azure authentication failed, falling back to mock extraction")
-                mock_result = await self._mock_ocr_extraction(document_path, "temp_id")
-                return mock_result
+                self.logger.error("Azure authentication failed")
+                return ToolResult(
+                    tool_name=self.name,
+                    success=False,
+                    data={},
+                    error_message="Azure Document Intelligence authentication failed. Please check your API key and endpoint configuration."
+                )
             raise
     
     def _convert_azure_result_to_dict(self, azure_result) -> Dict[str, Any]:
@@ -353,169 +361,7 @@ class DocumentOCRExtractor(BaseTool):
                 "content": str(azure_result) if azure_result else ""
             }
     
-    async def _mock_ocr_extraction(self, document_path: str, document_id: str) -> Dict[str, Any]:
-        """
-        Mock OCR extraction for testing and development when Azure is not available.
-        
-        Args:
-            document_path: Path to document file
-            document_id: Document identifier
-            
-        Returns:
-            Mock extraction result
-        """
-        self.logger.info(f"Using mock OCR extraction for {document_id}")
-        
-        # Simulate processing delay
-        await asyncio.sleep(0.1)
-        
-        # Check if file exists
-        if not os.path.exists(document_path):
-            raise FileNotFoundError(f"Document not found: {document_path}")
-        
-        # Get file info
-        file_size = os.path.getsize(document_path)
-        file_ext = os.path.splitext(document_path)[1].lower()
-        
-        # Generate mock content based on file type and name
-        mock_content = self._generate_mock_content(document_path, file_ext)
-        
-        # Process the mock content through the same pipeline as Azure results
-        mock_extraction_result = {
-            "content": mock_content["text"],
-            "tables": mock_content["tables"],
-            "key_value_pairs": mock_content["key_value_pairs"],
-            "pages": [{"page_number": i+1} for i in range(mock_content["page_count"])]
-        }
-        
-        return self._process_extraction_result(mock_extraction_result, document_id)
-    
-    def _generate_mock_content(self, document_path: str, file_ext: str) -> Dict[str, Any]:
-        """
-        Generate mock content based on document type and filename.
-        
-        Args:
-            document_path: Path to the document
-            file_ext: File extension
-            
-        Returns:
-            Mock content dictionary
-        """
-        filename = os.path.basename(document_path).lower()
-        
-        # Determine document type from filename
-        if "passport" in filename or "id" in filename:
-            return self._mock_identity_document()
-        elif "paystub" in filename or "pay_stub" in filename:
-            return self._mock_paystub_document()
-        elif "bank" in filename or "statement" in filename:
-            return self._mock_bank_statement()
-        elif "utility" in filename or "bill" in filename:
-            return self._mock_utility_bill()
-        elif "employment" in filename or "letter" in filename:
-            return self._mock_employment_letter()
-        else:
-            return self._mock_generic_document()
-    
-    def _mock_identity_document(self) -> Dict[str, Any]:
-        """Generate mock identity document content."""
-        return {
-            "text": "PASSPORT United States of America John Doe DOB: 01/01/1985 Passport No: 123456789 Expiration: 01/01/2030",
-            "tables": [],
-            "key_value_pairs": [
-                {"key": "Name", "value": "John Doe", "confidence": 0.95},
-                {"key": "Date of Birth", "value": "01/01/1985", "confidence": 0.92},
-                {"key": "Passport Number", "value": "123456789", "confidence": 0.98},
-                {"key": "Expiration Date", "value": "01/01/2030", "confidence": 0.90}
-            ],
-            "page_count": 1
-        }
-    
-    def _mock_paystub_document(self) -> Dict[str, Any]:
-        """Generate mock paystub document content."""
-        return {
-            "text": "ABC Company Pay Statement Employee: John Doe Pay Period: 01/01/2024 - 01/15/2024 Gross Pay: $5,000.00 Net Pay: $3,800.00",
-            "tables": [
-                {
-                    "rows": 3,
-                    "columns": 2,
-                    "data": [
-                        ["Description", "Amount"],
-                        ["Gross Pay", "$5,000.00"],
-                        ["Net Pay", "$3,800.00"]
-                    ]
-                }
-            ],
-            "key_value_pairs": [
-                {"key": "Employee Name", "value": "John Doe", "confidence": 0.95},
-                {"key": "Gross Pay", "value": "$5,000.00", "confidence": 0.98},
-                {"key": "Net Pay", "value": "$3,800.00", "confidence": 0.97},
-                {"key": "Pay Period", "value": "01/01/2024 - 01/15/2024", "confidence": 0.90}
-            ],
-            "page_count": 1
-        }
-    
-    def _mock_bank_statement(self) -> Dict[str, Any]:
-        """Generate mock bank statement content."""
-        return {
-            "text": "First National Bank Account Statement John Doe Account: ****1234 Statement Period: 01/01/2024 - 01/31/2024 Beginning Balance: $10,000.00 Ending Balance: $12,500.00",
-            "tables": [
-                {
-                    "rows": 4,
-                    "columns": 3,
-                    "data": [
-                        ["Date", "Description", "Amount"],
-                        ["01/15/2024", "Direct Deposit", "$5,000.00"],
-                        ["01/20/2024", "Mortgage Payment", "-$2,500.00"],
-                        ["01/31/2024", "Ending Balance", "$12,500.00"]
-                    ]
-                }
-            ],
-            "key_value_pairs": [
-                {"key": "Account Holder", "value": "John Doe", "confidence": 0.95},
-                {"key": "Account Number", "value": "****1234", "confidence": 0.90},
-                {"key": "Beginning Balance", "value": "$10,000.00", "confidence": 0.95},
-                {"key": "Ending Balance", "value": "$12,500.00", "confidence": 0.95}
-            ],
-            "page_count": 2
-        }
-    
-    def _mock_utility_bill(self) -> Dict[str, Any]:
-        """Generate mock utility bill content."""
-        return {
-            "text": "Electric Company Utility Bill John Doe 123 Main St, Anytown, ST 12345 Account: 987654321 Bill Date: 01/31/2024 Amount Due: $125.50",
-            "tables": [],
-            "key_value_pairs": [
-                {"key": "Customer Name", "value": "John Doe", "confidence": 0.95},
-                {"key": "Service Address", "value": "123 Main St, Anytown, ST 12345", "confidence": 0.92},
-                {"key": "Account Number", "value": "987654321", "confidence": 0.90},
-                {"key": "Amount Due", "value": "$125.50", "confidence": 0.95}
-            ],
-            "page_count": 1
-        }
-    
-    def _mock_employment_letter(self) -> Dict[str, Any]:
-        """Generate mock employment letter content."""
-        return {
-            "text": "ABC Corporation Employment Verification Letter This letter confirms that John Doe is employed as Software Engineer with an annual salary of $75,000. Employment start date: 01/01/2020.",
-            "tables": [],
-            "key_value_pairs": [
-                {"key": "Employee Name", "value": "John Doe", "confidence": 0.95},
-                {"key": "Position", "value": "Software Engineer", "confidence": 0.90},
-                {"key": "Annual Salary", "value": "$75,000", "confidence": 0.95},
-                {"key": "Start Date", "value": "01/01/2020", "confidence": 0.88}
-            ],
-            "page_count": 1
-        }
-    
-    def _mock_generic_document(self) -> Dict[str, Any]:
-        """Generate mock generic document content."""
-        return {
-            "text": "Generic Document Content This is a sample document with various text content for processing and analysis.",
-            "tables": [],
-            "key_value_pairs": [],
-            "page_count": 1
-        }
+
     
     def _process_extraction_result(self, extraction_result: Dict[str, Any], document_id: str) -> Dict[str, Any]:
         """

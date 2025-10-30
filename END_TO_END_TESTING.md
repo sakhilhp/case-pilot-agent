@@ -18,13 +18,13 @@ First, let's extract data from available documents and see what information we c
 
 ```bash
 # Test OCR extraction on the sample PDF
-python -m mortgage_ai_processing.cli tools ocr test_documents/sample.pdf \
-  --document-id "e2e-pdf-001" \
+python -m mortgage_ai_processing.cli tools call document_ocr_extractor \
+  --params '{"document_path": "test_documents/sample.pdf", "document_id": "e2e-pdf-001"}' \
   --output "extracted_pdf_data.json"
 
-# Test OCR extraction on the passport document
-python -m mortgage_ai_processing.cli tools ocr test_documents/sample_passport.txt \
-  --document-id "e2e-passport-001" \
+# Test OCR extraction on the passport document  
+python -m mortgage_ai_processing.cli tools call document_ocr_extractor \
+  --params '{"document_path": "test_documents/sample_passport.txt", "document_id": "e2e-passport-001"}' \
   --output "extracted_passport_data.json"
 ```
 
@@ -71,7 +71,7 @@ Based on the extracted document data, create a comprehensive mortgage applicatio
     "phone": "555-123-4567",
     "current_address": "123 Main St, Anytown, ST 12345",
     "employment_status": "Employed",
-    "annual_income": 75000,
+    "annual_income": "75000",
     "employer_name": "ABC Corporation",
     "job_title": "Software Engineer",
     "employment_start_date": "2020-01-01T00:00:00"
@@ -79,15 +79,15 @@ Based on the extracted document data, create a comprehensive mortgage applicatio
   "property_info": {
     "address": "456 Oak Avenue, Testville, ST 67890",
     "property_type": "Single Family Home",
-    "property_value": 300000,
+    "property_value": "300000",
     "property_use": "Primary Residence",
     "year_built": 2010
   },
   "loan_details": {
-    "loan_amount": 240000,
-    "loan_type": "CONVENTIONAL",
+    "loan_amount": "240000",
+    "loan_type": "conventional",
     "loan_term_years": 30,
-    "down_payment": 60000,
+    "down_payment": "60000",
     "purpose": "Purchase",
     "interest_rate": 6.5
   },
@@ -105,7 +105,7 @@ Based on the extracted document data, create a comprehensive mortgage applicatio
       "extraction_status": "completed"
     }
   ],
-  "processing_status": "PENDING",
+  "processing_status": "pending",
   "credit_score": 720,
   "debt_to_income_ratio": 0.28,
   "assets": {

@@ -159,14 +159,14 @@ class FraudDetectionAnalyzerTool(BaseTool):
     """Tool for comprehensive mortgage fraud detection and analysis."""
     
     def __init__(self):
-        metadata = ToolMetadata(
+        from ..base import ToolCategory
+        super().__init__(
             name="fraud_detection_analyzer",
             description="Comprehensive mortgage fraud detection system that analyzes application data, documents, and patterns to identify potential fraud indicators across multiple categories",
+            category=ToolCategory.RISK_ASSESSMENT,
             version="1.0.0",
-            author="Mortgage AI Processing System",
-            tags=["fraud", "detection", "risk", "analysis", "compliance", "aml", "bsa"]
+            agent_domain="risk_assessment"
         )
-        super().__init__(metadata)
         
     def get_parameters_schema(self) -> Dict[str, Any]:
         """Get the JSON schema for tool parameters."""

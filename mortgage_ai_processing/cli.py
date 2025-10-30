@@ -52,6 +52,91 @@ def mcp():
     pass
 
 
+@mcp.command()
+@click.option('--port', '-p', default=8000, help='Port to run MCP server on')
+@click.option('--host', '-h', default='localhost', help='Host to bind MCP server to')
+def serve(port: int, host: str):
+    """Start the MCP HTTP server."""
+    
+    async def _serve():
+        try:
+            from .mcp.http_server import start_mcp_http_server
+            
+            click.echo(f"🚀 Starting MCP HTTP server on {host}:{port}")
+            click.echo("This will start a real HTTP server that accepts JSON-RPC requests")
+            click.echo()
+            
+            await start_mcp_http_server(host, port)
+            
+        except Exception as e:
+            click.echo(f"❌ Error starting MCP server: {str(e)}", err=True)
+            sys.exit(1)
+            
+    asyncio.run(_serve())
+
+
+@mcp.command()
+@click.argument('method')
+@click.option('--params', '-p', help='JSON parameters for the request')
+@click.option('--params-file', '-f', type=click.Path(exists=True), help='JSON file containing parameters')
+@click.option('--output', '-o', type=click.Path(), help='Output file for response')
+def request(method: str, params: Optional[str], params_file: Optional[str], output: Optional[str]):
+    """Send an MCP request to the server."""
+    
+    async def _request():
+        try:
+            print("Starting MCP request...")
+            
+            from mortgage_ai_processing.mcp.mortgage_server import get_mcp_server
+            
+            # Get MCP server instance
+            server = get_mcp_server()
+            print(f"Got server: {server}")
+            
+            # Create MCP request
+            request_data = {
+                "jsonrpc": "2.0",
+                "method": method,
+                "params": {},
+                "id": "cli-test"
+            }
+            
+            print(f"Sending request: {request_data}")
+            
+            # Send request to server
+            response_json = await server.handle_request(json.dumps(request_data))
+            print(f"Got response: {response_json}")
+            
+            # Parse response
+            response = json.loads(response_json)
+            print(f"Parsed response: {response}")
+            
+            # Display result
+            if "result" in response:
+                print("✅ MCP Request Successful")
+                print(f"Result: {json.dumps(response['result'], indent=2)}")
+            else:
+                print("❌ MCP Request Failed")
+                print(f"Error: {response.get('error', 'Unknown error')}")
+            
+            return True
+                        
+        except Exception as e:
+            print(f"Error sending MCP request: {str(e)}")
+            import traceback
+            traceback.print_exc()
+            return False
+            
+    try:
+        asyncio.run(_request())
+    except Exception as e:
+        click.echo(f"Error in asyncio.run for MCP request: {str(e)}", err=True)
+        import traceback
+        click.echo("Full traceback:", err=True)
+        traceback.print_exc()
+        sys.exit(1)
+
+
 @cli.group()
 def system():
     """System administration commands."""
@@ -522,74 +607,10 @@ def cancel(execution_id: str):
     asyncio.run(_cancel())
 
 
-@mcp.command()
-@click.option('--port', '-p', default=8000, help='Port to run MCP server on')
-@click.option('--host', '-h', default='localhost', help='Host to bind MCP server to')
-def serve(port: int, host: str):
-    """Start the MCP server."""
-    
-    async def _serve():
-        try:
-            server = get_mcp_server()
-            click.echo(f"Starting MCP server on {host}:{port}")
-            
-            # This is a placeholder - actual server implementation would go here
-            click.echo("MCP server is ready to handle requests")
-            click.echo("Press Ctrl+C to stop")
-            
-            # Keep server running
-            try:
-                while True:
-                    await asyncio.sleep(1)
-            except KeyboardInterrupt:
-                click.echo("\nShutting down MCP server")
-                
-        except Exception as e:
-            click.echo(f"Error starting MCP server: {str(e)}", err=True)
-            
-    asyncio.run(_serve())
+# Duplicate serve command removed - using the HTTP server version above
 
 
-@mcp.command()
-@click.argument('method')
-@click.option('--params', '-p', help='JSON parameters for the request')
-def request(method: str, params: Optional[str]):
-    """Send a request to the MCP server."""
-    
-    async def _request():
-        try:
-            server = get_mcp_server()
-            
-            # Parse parameters
-            request_params = {}
-            if params:
-                request_params = json.loads(params)
-                
-            # Create MCP request
-            request_data = {
-                "jsonrpc": "2.0",
-                "method": method,
-                "params": request_params,
-                "id": "cli_request"
-            }
-            
-            # Send request
-            response_str = await server.handle_request(json.dumps(request_data))
-            response = json.loads(response_str)
-            
-            # Display response
-            if "error" in response:
-                click.echo(f"Error: {response['error']['message']}", err=True)
-                if "data" in response["error"]:
-                    click.echo(f"Details: {response['error']['data']}")
-            else:
-                click.echo("Response:")
-                click.echo(json.dumps(response["result"], indent=2))
-                
-        except Exception as e:
-            click.echo(f"Error sending MCP request: {str(e)}", err=True)
-            
-    asyncio.run(_request())
+
 
 
 @system.command()
@@ -831,6 +852,57 @@ def info(tool_name: str):
             click.echo(f"Error getting tool info: {str(e)}", err=True)
             
     asyncio.run(_info())
+
+
+@tools.command()
+@click.option('--test-azure', is_flag=True, help='Test Azure Document Intelligence configuration')
+def test_config(test_azure: bool):
+    """Test tool configurations."""
+    
+    if test_azure:
+        click.echo("Testing Azure Document Intelligence Configuration...")
+        click.echo("=" * 50)
+        
+        import os
+        
+        # Check environment variables
+        endpoint = os.getenv("AZURE_DOCUMENT_INTELLIGENCE_ENDPOINT")
+        api_key = os.getenv("AZURE_DOCUMENT_INTELLIGENCE_API_KEY")
+        
+        click.echo(f"Endpoint configured: {bool(endpoint)}")
+        if endpoint:
+            click.echo(f"Endpoint: {endpoint}")
+        
+        click.echo(f"API Key configured: {bool(api_key)}")
+        if api_key:
+            click.echo(f"API Key: {api_key[:10]}...{api_key[-4:] if len(api_key) > 14 else api_key}")
+        
+        # Test SDK availability
+        try:
+            from azure.ai.documentintelligence import DocumentIntelligenceClient
+            from azure.core.credentials import AzureKeyCredential
+            click.echo("✅ Azure Document Intelligence SDK available")
+        except ImportError:
+            try:
+                from azure.ai.formrecognizer import DocumentAnalysisClient
+                click.echo("✅ Azure Form Recognizer SDK available (fallback)")
+            except ImportError:
+                click.echo("❌ Azure SDK not available")
+                click.echo("Install with: pip install azure-ai-documentintelligence")
+                return
+        
+        # Test document classifier
+        try:
+            from mortgage_ai_processing.tools.document.classifier import DocumentClassifier
+            classifier = DocumentClassifier()
+            
+            if classifier.client:
+                click.echo("✅ Document classifier Azure client initialized")
+            else:
+                click.echo("❌ Document classifier has no Azure client")
+                
+        except Exception as e:
+            click.echo(f"❌ Error testing classifier: {str(e)}")
 
 
 @tools.command()

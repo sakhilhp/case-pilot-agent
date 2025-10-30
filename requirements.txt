@@ -11,9 +11,10 @@ azure-core>=1.29.0
 # Cryptography for credential encryption
 cryptography>=41.0.0
 
-# HTTP client
+# HTTP client and server
 httpx>=0.25.0
 requests>=2.31.0
+aiohttp>=3.9.0
 
 # CLI interface
 click>=8.1.0

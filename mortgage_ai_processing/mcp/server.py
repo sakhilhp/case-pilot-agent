@@ -133,11 +133,23 @@ class MCPServer(ABC):
         tools_info = []
         
         for tool_name, tool in self.tools.items():
-            tools_info.append({
-                "name": tool_name,
-                "description": tool.description,
-                "inputSchema": tool.get_parameters_schema()
-            })
+            try:
+                schema = tool.get_parameters_schema()
+                if schema is None:
+                    self.logger.error(f"Tool {tool_name} returned None schema")
+                    schema = {"type": "object", "properties": {}}
+                tools_info.append({
+                    "name": tool_name,
+                    "description": tool.description,
+                    "inputSchema": schema
+                })
+            except Exception as e:
+                self.logger.error(f"Error getting schema for tool {tool_name}: {str(e)}")
+                tools_info.append({
+                    "name": tool_name,
+                    "description": tool.description,
+                    "inputSchema": {"type": "object", "properties": {}}
+                })
             
         return {"tools": tools_info}
         

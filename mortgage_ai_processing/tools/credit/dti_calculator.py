@@ -28,9 +28,11 @@ class DebtToIncomeCalculatorTool(BaseTool):
     """
     
     def __init__(self):
+        from ..base import ToolCategory
         super().__init__(
             name="debt_to_income_calculator",
             description="Detailed DTI analysis with debt categorization and loan program compliance checking",
+            category=ToolCategory.FINANCIAL_ANALYSIS,
             agent_domain="credit_assessment"
         )
         
@@ -120,6 +122,31 @@ class DebtToIncomeCalculatorTool(BaseTool):
                 }
             },
             "required": ["application_id", "borrower_info", "income_information"]
+        }
+    
+    def get_input_schema(self) -> Dict[str, Any]:
+        """Return input schema for DTI calculation."""
+        return {
+            "type": "object",
+            "required": ["applicant_id", "monthly_income", "monthly_debt_payments"],
+            "properties": {
+                "applicant_id": {
+                    "type": "string",
+                    "description": "Unique identifier for the applicant"
+                },
+                "monthly_income": {
+                    "type": "number",
+                    "description": "Total monthly income"
+                },
+                "monthly_debt_payments": {
+                    "type": "number", 
+                    "description": "Total monthly debt payments"
+                },
+                "proposed_mortgage_payment": {
+                    "type": "number",
+                    "description": "Proposed monthly mortgage payment"
+                }
+            }
         }
     
     async def execute(self, **kwargs) -> ToolResult:

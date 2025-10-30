@@ -113,19 +113,23 @@ class MortgageProcessingMCPServer(MCPServer):
                 application, workflow_type, execution_id
             )
             
-            # Format response
+            # Format response - handle both enum and string values defensively
+            execution_status = execution.status.value if hasattr(execution.status, 'value') else str(execution.status)
+            decision_value = loan_decision.decision.value if hasattr(loan_decision.decision, 'value') else str(loan_decision.decision)
+            
             return {
                 "execution_id": execution.execution_id,
-                "status": execution.status.value,
+                "status": execution_status,
                 "progress": execution.get_progress(),
                 "loan_decision": {
-                    "decision": loan_decision.decision.value,
-                    "decision_factors": loan_decision.decision_factors,
-                    "risk_score": loan_decision.risk_score,
-                    "confidence_score": loan_decision.confidence_score,
+                    "decision": decision_value,
+                    "decision_factors": self._serialize_for_json(loan_decision.decision_factors),
+                    "overall_score": float(loan_decision.overall_score),
                     "conditions": loan_decision.conditions,
-                    "adverse_actions": loan_decision.adverse_actions,
-                    "loan_terms": asdict(loan_decision.loan_terms) if loan_decision.loan_terms else None
+                    "adverse_actions": [self._serialize_for_json(action) for action in loan_decision.adverse_actions],
+                    "loan_terms": self._serialize_for_json(loan_decision.loan_terms) if loan_decision.loan_terms else None,
+                    "decision_rationale": loan_decision.decision_rationale,
+                    "requires_manual_review": loan_decision.requires_manual_review
                 },
                 "started_at": execution.started_at.isoformat() if execution.started_at else None,
                 "completed_at": execution.completed_at.isoformat() if execution.completed_at else None
@@ -437,6 +441,41 @@ class MortgageProcessingMCPServer(MCPServer):
                 raise ValueError(f"Missing required loan field: {field}")
                 
         return True
+        
+    def _serialize_for_json(self, obj: Any) -> Any:
+        """Convert objects to JSON-serializable format, handling Decimal and Pydantic models."""
+        from decimal import Decimal
+        
+        if obj is None:
+            return None
+        elif isinstance(obj, Decimal):
+            return float(obj)
+        elif hasattr(obj, 'model_dump'):
+            # Pydantic model
+            data = obj.model_dump()
+            return self._convert_decimals_in_dict(data)
+        elif isinstance(obj, dict):
+            return self._convert_decimals_in_dict(obj)
+        elif isinstance(obj, list):
+            return [self._serialize_for_json(item) for item in obj]
+        else:
+            return obj
+            
+    def _convert_decimals_in_dict(self, data: Dict[str, Any]) -> Dict[str, Any]:
+        """Recursively convert Decimal objects to float in a dictionary."""
+        from decimal import Decimal
+        
+        result = {}
+        for key, value in data.items():
+            if isinstance(value, Decimal):
+                result[key] = float(value)
+            elif isinstance(value, dict):
+                result[key] = self._convert_decimals_in_dict(value)
+            elif isinstance(value, list):
+                result[key] = [self._serialize_for_json(item) for item in value]
+            else:
+                result[key] = value
+        return result
         
     async def create_sample_application(self) -> Dict[str, Any]:
         """
